@@ -1,0 +1,21 @@
+Hibernate: create table guest (guest_id uuid not null, email varchar(255), first_name varchar(255), last_name varchar(255), primary key (guest_id))
+Hibernate: create table hotel (hotel_id uuid not null, address varchar(255), location varchar(255), name varchar(255), primary key (hotel_id))
+Hibernate: create table reservation (reservation_id uuid not null, end_date date, start_date date, status smallint check (status between 0 and 4), guest_id uuid, hotel_id uuid, room_type_id uuid, primary key (reservation_id))
+Hibernate: create table room (room_id uuid not null, floor integer not null, is_available boolean not null, room_number integer not null, hotel_id uuid, room_type_id uuid, primary key (room_id))
+Hibernate: create table room_type (room_type_id uuid not null, date date, price_per_night float(53) not null, room_category smallint check (room_category between 0 and 3), hotel_id uuid, primary key (room_type_id))
+Hibernate: create table room_type_inventory (date date not null, total_inventory integer not null, total_reserved integer not null, hotel_id uuid not null, room_type_id uuid not null, primary key (date, hotel_id, room_type_id))
+Hibernate: alter table if exists room drop constraint if exists UKgudxyidjg3njppqd5h851tare
+
+
+
+
+
+Hibernate: alter table if exists room add constraint UKgudxyidjg3njppqd5h851tare unique (room_type_id)
+Hibernate: alter table if exists reservation add constraint FK8rduaf1n8es4jf5wagbjhjepj foreign key (guest_id) references guest
+Hibernate: alter table if exists reservation add constraint FKkrmw55mlm5an5ca5qnmrs3pbe foreign key (hotel_id) references hotel
+Hibernate: alter table if exists reservation add constraint FKepoxdh325da91f4wvhjry07el foreign key (room_type_id) references room_type
+Hibernate: alter table if exists room add constraint FKdosq3ww4h9m2osim6o0lugng8 foreign key (hotel_id) references hotel
+Hibernate: alter table if exists room add constraint FKd468eq7j1cbue8mk20qfrj5et foreign key (room_type_id) references room_type
+Hibernate: alter table if exists room_type add constraint FK8sgnny12n0v74j6u7u94w7mxp foreign key (hotel_id) references hotel
+Hibernate: alter table if exists room_type_inventory add constraint FKsayl5h33xji7b1kaqlh25k19b foreign key (hotel_id) references hotel
+Hibernate: alter table if exists room_type_inventory add constraint FK2pgr73k3jhsohfxby1coradab foreign key (room_type_id) references room_type
