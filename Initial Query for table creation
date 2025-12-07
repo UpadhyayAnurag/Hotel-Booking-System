@@ -1,21 +1,191 @@
-Hibernate: create table guest (guest_id uuid not null, email varchar(255), first_name varchar(255), last_name varchar(255), primary key (guest_id))
-Hibernate: create table hotel (hotel_id uuid not null, address varchar(255), location varchar(255), name varchar(255), primary key (hotel_id))
-Hibernate: create table reservation (reservation_id uuid not null, end_date date, start_date date, status smallint check (status between 0 and 4), guest_id uuid, hotel_id uuid, room_type_id uuid, primary key (reservation_id))
-Hibernate: create table room (room_id uuid not null, floor integer not null, is_available boolean not null, room_number integer not null, hotel_id uuid, room_type_id uuid, primary key (room_id))
-Hibernate: create table room_type (room_type_id uuid not null, date date, price_per_night float(53) not null, room_category smallint check (room_category between 0 and 3), hotel_id uuid, primary key (room_type_id))
-Hibernate: create table room_type_inventory (date date not null, total_inventory integer not null, total_reserved integer not null, hotel_id uuid not null, room_type_id uuid not null, primary key (date, hotel_id, room_type_id))
-Hibernate: alter table if exists room drop constraint if exists UKgudxyidjg3njppqd5h851tare
-
-
-
-
-
-Hibernate: alter table if exists room add constraint UKgudxyidjg3njppqd5h851tare unique (room_type_id)
-Hibernate: alter table if exists reservation add constraint FK8rduaf1n8es4jf5wagbjhjepj foreign key (guest_id) references guest
-Hibernate: alter table if exists reservation add constraint FKkrmw55mlm5an5ca5qnmrs3pbe foreign key (hotel_id) references hotel
-Hibernate: alter table if exists reservation add constraint FKepoxdh325da91f4wvhjry07el foreign key (room_type_id) references room_type
-Hibernate: alter table if exists room add constraint FKdosq3ww4h9m2osim6o0lugng8 foreign key (hotel_id) references hotel
-Hibernate: alter table if exists room add constraint FKd468eq7j1cbue8mk20qfrj5et foreign key (room_type_id) references room_type
-Hibernate: alter table if exists room_type add constraint FK8sgnny12n0v74j6u7u94w7mxp foreign key (hotel_id) references hotel
-Hibernate: alter table if exists room_type_inventory add constraint FKsayl5h33xji7b1kaqlh25k19b foreign key (hotel_id) references hotel
-Hibernate: alter table if exists room_type_inventory add constraint FK2pgr73k3jhsohfxby1coradab foreign key (room_type_id) references room_type
+create table hotels (
+        hotel_id uuid not null,
+        address varchar(250) not null,
+        cancellation_policy varchar(1000),
+        check_in_time varchar(5),
+        check_out_time varchar(5),
+        city varchar(100) not null,
+        country varchar(100) not null,
+        created_at timestamp(6) not null,
+        description varchar(2000),
+        email varchar(100) not null,
+        is_active boolean,
+        name varchar(100) not null,
+        phone varchar(20) not null,
+        star_rating integer check ((star_rating>=1) and (star_rating<=5)),
+        state varchar(100),
+        total_rooms integer check (total_rooms>=1),
+        updated_at timestamp(6),
+        website varchar(200),
+        zip_code varchar(20),
+        primary key (hotel_id)
+    )
+Hibernate: 
+    create table hotels (
+        hotel_id uuid not null,
+        address varchar(250) not null,
+        cancellation_policy varchar(1000),
+        check_in_time varchar(5),
+        check_out_time varchar(5),
+        city varchar(100) not null,
+        country varchar(100) not null,
+        created_at timestamp(6) not null,
+        description varchar(2000),
+        email varchar(100) not null,
+        is_active boolean,
+        name varchar(100) not null,
+        phone varchar(20) not null,
+        star_rating integer check ((star_rating>=1) and (star_rating<=5)),
+        state varchar(100),
+        total_rooms integer check (total_rooms>=1),
+        updated_at timestamp(6),
+        website varchar(200),
+        zip_code varchar(20),
+        primary key (hotel_id)
+    )
+2025-12-07T11:22:58.891+05:30 DEBUG 16176 --- [HotelBookingSystem] [  restartedMain] org.hibernate.SQL                        : 
+    create table payments (
+        payment_id uuid not null,
+        amount numeric(10,2) not null,
+        created_at timestamp(6) not null,
+        failure_reason varchar(500),
+        payment_date timestamp(6),
+        payment_gateway varchar(50),
+        payment_method varchar(20) not null check (payment_method in ('CREDIT_CARD','DEBIT_CARD','UPI','NET_BANKING','WALLET')),
+        payment_status varchar(20) not null check (payment_status in ('PENDING','PROCESSING','SUCCESS','FAILED','REFUNDED','CANCELLED')),
+        refund_reason varchar(500),
+        refunded_at timestamp(6),
+        transaction_id varchar(100),
+        updated_at timestamp(6),
+        reservation_id uuid not null,
+        primary key (payment_id)
+    )
+Hibernate: 
+    create table payments (
+        payment_id uuid not null,
+        amount numeric(10,2) not null,
+        created_at timestamp(6) not null,
+        failure_reason varchar(500),
+        payment_date timestamp(6),
+        payment_gateway varchar(50),
+        payment_method varchar(20) not null check (payment_method in ('CREDIT_CARD','DEBIT_CARD','UPI','NET_BANKING','WALLET')),
+        payment_status varchar(20) not null check (payment_status in ('PENDING','PROCESSING','SUCCESS','FAILED','REFUNDED','CANCELLED')),
+        refund_reason varchar(500),
+        refunded_at timestamp(6),
+        transaction_id varchar(100),
+        updated_at timestamp(6),
+        reservation_id uuid not null,
+        primary key (payment_id)
+    )
+2025-12-07T11:22:58.898+05:30 DEBUG 16176 --- [HotelBookingSystem] [  restartedMain] org.hibernate.SQL                        : 
+    create table reservations (
+        reservation_id uuid not null,
+        amount_paid numeric(10,2),
+        cancellation_reason varchar(500),
+        cancelled_at timestamp(6),
+        check_in_date date not null,
+        check_out_date date not null,
+        created_at timestamp(6) not null,
+        is_active boolean,
+        number_of_adults integer not null check (number_of_adults>=1),
+        number_of_children integer check (number_of_children>=0),
+        number_of_nights integer not null check (number_of_nights>=1),
+        payment_reference varchar(100),
+        price_per_night numeric(10,2) not null,
+        special_requests varchar(500),
+        status varchar(20) not null check (status in ('PENDING','CONFIRMED','CHECKED_IN','CHECKED_OUT','CANCELLED','NO_SHOW')),
+        total_amount numeric(10,2) not null,
+        updated_at timestamp(6),
+        guest_id uuid not null,
+        hotel_id uuid not null,
+        room_type_id uuid not null,
+        primary key (reservation_id)
+    )
+Hibernate: 
+    create table reservations (
+        reservation_id uuid not null,
+        amount_paid numeric(10,2),
+        cancellation_reason varchar(500),
+        cancelled_at timestamp(6),
+        check_in_date date not null,
+        check_out_date date not null,
+        created_at timestamp(6) not null,
+        is_active boolean,
+        number_of_adults integer not null check (number_of_adults>=1),
+        number_of_children integer check (number_of_children>=0),
+        number_of_nights integer not null check (number_of_nights>=1),
+        payment_reference varchar(100),
+        price_per_night numeric(10,2) not null,
+        special_requests varchar(500),
+        status varchar(20) not null check (status in ('PENDING','CONFIRMED','CHECKED_IN','CHECKED_OUT','CANCELLED','NO_SHOW')),
+        total_amount numeric(10,2) not null,
+        updated_at timestamp(6),
+        guest_id uuid not null,
+        hotel_id uuid not null,
+        room_type_id uuid not null,
+        primary key (reservation_id)
+    )
+2025-12-07T11:22:58.904+05:30 DEBUG 16176 --- [HotelBookingSystem] [  restartedMain] org.hibernate.SQL                        : 
+    create table room_types (
+        room_type_id uuid not null,
+        bed_info varchar(100),
+        created_at timestamp(6) not null,
+        description varchar(1000),
+        is_active boolean,
+        max_adults integer not null check (max_adults>=1),
+        max_children integer check (max_children>=0),
+        price_per_night numeric(10,2) not null,
+        room_category varchar(20) not null check (room_category in ('SINGLE','DOUBLE','SUITE','DELUXE','STUDIO')),
+        room_size_sqft integer check (room_size_sqft>=1),
+        type_name varchar(100) not null,
+        updated_at timestamp(6),
+        hotel_id uuid not null,
+        primary key (room_type_id)
+    )
+Hibernate: 
+    create table room_types (
+        room_type_id uuid not null,
+        bed_info varchar(100),
+        created_at timestamp(6) not null,
+        description varchar(1000),
+        is_active boolean,
+        max_adults integer not null check (max_adults>=1),
+        max_children integer check (max_children>=0),
+        price_per_night numeric(10,2) not null,
+        room_category varchar(20) not null check (room_category in ('SINGLE','DOUBLE','SUITE','DELUXE','STUDIO')),
+        room_size_sqft integer check (room_size_sqft>=1),
+        type_name varchar(100) not null,
+        updated_at timestamp(6),
+        hotel_id uuid not null,
+        primary key (room_type_id)
+    )
+2025-12-07T11:22:58.913+05:30 DEBUG 16176 --- [HotelBookingSystem] [  restartedMain] org.hibernate.SQL                        : 
+    create table rooms (
+        room_id uuid not null,
+        created_at timestamp(6) not null,
+        description varchar(500),
+        floor integer not null,
+        is_active boolean,
+        is_available boolean,
+        is_occupied boolean,
+        room_number varchar(10) not null,
+        updated_at timestamp(6),
+        hotel_id uuid not null,
+        room_type_id uuid not null,
+        primary key (room_id)
+    )
+Hibernate: 
+    create table rooms (
+        room_id uuid not null,
+        created_at timestamp(6) not null,
+        description varchar(500),
+        floor integer not null,
+        is_active boolean,
+        is_available boolean,
+        is_occupied boolean,
+        room_number varchar(10) not null,
+        updated_at timestamp(6),
+        hotel_id uuid not null,
+        room_type_id uuid not null,
+        primary key (room_id)
+    )
