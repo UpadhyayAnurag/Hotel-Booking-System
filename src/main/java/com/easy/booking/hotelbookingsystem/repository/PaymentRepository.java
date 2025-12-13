@@ -5,6 +5,7 @@ import com.easy.booking.hotelbookingsystem.enums.PaymentStatus;
 import com.easy.booking.hotelbookingsystem.model.Payment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Repository
 public interface PaymentRepository extends JpaRepository<Payment, UUID> {
     List<Payment> findByReservation_ReservationId(UUID reservationId);
     List<Payment> findByPaymentStatus(PaymentStatus paymentStatus);

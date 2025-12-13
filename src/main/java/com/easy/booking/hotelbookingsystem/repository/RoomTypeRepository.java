@@ -4,12 +4,14 @@ import com.easy.booking.hotelbookingsystem.enums.RoomCategory;
 import com.easy.booking.hotelbookingsystem.model.RoomType;
 import jakarta.validation.constraints.Min;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Repository
 public interface RoomTypeRepository extends JpaRepository<RoomType, UUID> {
     List<RoomType> findByHotel_HotelId(UUID hotelId);
     List<RoomType> findByHotel_HotelIdAndIsActiveTrue(UUID hotelId);
