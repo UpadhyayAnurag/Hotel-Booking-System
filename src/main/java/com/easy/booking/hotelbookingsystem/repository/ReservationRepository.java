@@ -23,4 +23,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID> 
     List<Reservation> findByHotel_HotelIdAndCheckInDateLessThanEqualAndCheckOutDateGreaterThanEqual(UUID hotelId, LocalDate checkInDate, LocalDate checkOutDate);
     long countByHotel_HotelIdAndStatus(UUID hotelId, ReservationStatus status);
     List<Reservation> findByRoomType_RoomTypeIdAndCheckInDateLessThanEqualAndCheckOutDateGreaterThanAndStatusIn(UUID roomTypeId, LocalDate checkInDate, LocalDate checkOutDate, List<ReservationStatus> activeStatuses);
+    List<Reservation> findByGuest_GuestIdOrderByCreatedAtDesc(UUID guestId);
+    long countByRoomType_RoomTypeIdAndCheckInDateLessThanEqualAndCheckOutDateGreaterThanAndStatusIn(UUID roomTypeId, LocalDate checkInDate, LocalDate checkoutDate, List<ReservationStatus> activeStatuses);
 }
