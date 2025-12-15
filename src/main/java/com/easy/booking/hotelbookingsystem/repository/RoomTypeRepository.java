@@ -21,4 +21,6 @@ public interface RoomTypeRepository extends JpaRepository<RoomType, UUID> {
     List<RoomType> findByPricePerNightBetween(BigDecimal min, BigDecimal max);
     List<RoomType> findByMaxAdultsGreaterThanEqual(Integer maxAdults);
     Optional<RoomType> findByHotel_HotelIdAndTypeName(UUID hotelId, String typeName);
+    long countByHotel_HotelIdAndIsActiveTrue(UUID hotelId);
+    List<RoomType> findByHotel_HotelIdAndRoomCategoryAndIsActiveTrue(UUID hotelId, RoomCategory category);
 }
